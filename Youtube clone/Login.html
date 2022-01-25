@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/login.css">
+    <title>Login</title>
+</head>
+
+<body>
+    <div id="input_wrap">
+        <input type="text" id="username" placeholder="Username">
+        <input type="text" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <h3 id="invalid_cred"></h3>
+    </div>
+</body>
+
+</html>
+<script>
+
+    let login =async () => {
+        let login_data = {
+            username:document.getElementById("username").value,
+            password:document.getElementById("password").value
+        }
+       login_data=JSON.stringify(login_data)
+       console.log(login_data)
+      let url=`https://masai-api-mocker.herokuapp.com/auth/login`;
+
+      let res=await fetch(url,{
+          method:"POST",
+          body:login_data,
+          headers:{
+              "Content-Type":"application/json"
+          }
+      })
+      
+      let data=await res.json();
+      console.log(data)
+      if(data.error==true){
+          let invalid_cred=document.getElementById("invalid_cred")
+          invalid_cred.textContent="Invalid Login Credentials";
+      }
+      else{
+          window.location.href="Home.html"
+      }
+    }
+
+
+</script>

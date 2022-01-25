@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/login.css">
+    <title>Signup</title>
+    <style>
+        #login_redir {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="input_wrap">
+        <input type="text" id="name" placeholder="Name">
+        <input type="text" id="email" placeholder="Email">
+        <input type="text" id="password" placeholder="Password">
+        <input type="text" id="username"placeholder="Username">
+        <input type="text" id="mobile"placeholder="Mobile">
+        <input type="text" id="description"placeholder="Description">
+        <button onclick="register()">Sign Up</button>
+    </div>
+    <div id="login_redir">
+        Already Have an account? <a href="Login.html">Login Here</a>
+    </div>
+</body>
+
+</html>
+<script>
+    let register = async () => {
+            let signup_data = {
+                name:document.getElementById("name").value,
+                email:document.getElementById("email").value,
+                password: document.getElementById("password").value,
+                username: document.getElementById("username").value,
+                mobile:document.getElementById("mobile").value,
+                description:document.getElementById("description").value
+            }
+            signup_data=JSON.stringify(signup_data)
+            console.log(signup_data)
+
+            const url=`https://masai-api-mocker.herokuapp.com/auth/register`;
+
+            let res=await fetch(url,{
+                method:"POST",
+                body: signup_data,
+                headers:{
+                    "Content-Type":"application/json"
+                }  
+            });
+          let data =await res.json();
+          console.log(data)
+          if(data.error==false){
+          window.location.href="Login.html"
+          }
+        }
+</script>

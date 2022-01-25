@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youtubewatch</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: rgb(24, 24, 24);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        #nav {
+            height: 56px;
+            border-bottom: 1px solid grey;
+            padding-bottom: 5px;
+            display: flex;
+        }
+
+        #logo {
+            width: 100px;
+            height: 43px;
+            margin-left: 30px;
+            margin-top: 7px;
+        }
+
+        #inputdiv {
+            width: 45%;
+            height: 38px;
+            margin-left: 18%;
+            margin-top: 12px;
+            display: flex;
+        }
+
+        #search {
+            width: 90%;
+            height: 34px;
+            background-color: hsla(0, 0%, 7%);
+            border: 1px solid hsl(0, 0%, 18.82%);
+            outline: none;
+            color: #fff;
+            padding-left: 10px;
+            font-size: 17px;
+        }
+
+        #search:hover {
+            border: 1px solid #3ea6ff;
+        }
+
+        #search::placeholder {
+            font-size: 17px;
+            font-weight: 500;
+            padding-left: 2px;
+        }
+
+        #srch_btn {
+            width: 10%;
+            background-color: hsla(0, 0%, 100%, 0.08);
+        }
+
+        #srch_btn>img {
+            margin-left: 18px;
+            margin-top: 6px;
+            width: 29px;
+            height: 25px;
+        }
+
+        #videowrap {
+            width: 50%;
+            height: 400px;
+            border: 1px solid #cacaca;
+            margin: auto;
+            margin-top: 30px;
+        }
+
+        iframe {
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="nav">
+        <img src="images/logo.png" id="logo" onclick="returnHome()">
+        <div id="inputdiv">
+            <input type="text" id="search" placeholder="Search">
+            <div id="srch_btn" onclick="searchVideo()">
+                <img src="images/search.png" alt="">
+            </div>
+        </div>
+    </div>
+    <div id="videowrap"></div>
+</body>
+
+</html>
+<script>
+    let body = document.querySelector("body");
+    let videowrap = document.getElementById("videowrap");
+    body.append(videowrap)
+
+    let vid_data = JSON.parse(localStorage.getItem("videodata"))
+    var data = vid_data.videoId;
+
+    playVideo(data);
+
+    function playVideo(videoId) {
+        let iframe = document.createElement("iframe")
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+        iframe.width = 683;
+        iframe.height = 400;
+        iframe.allowFullscreen=true;
+        videowrap.append(iframe);
+    }
+
+    searchVideo = () => {
+        let input = document.getElementById("search").value
+        localStorage.setItem("input_val", JSON.stringify(input))
+        window.location.href = "Search.html"
+    }
+
+    function returnHome() {
+        window.location.href = "Home.html"
+    }
+
+
+</script>

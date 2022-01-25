@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youtube</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: rgb(24, 24, 24);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        #nav {
+            height: 56px;
+            border-bottom: 1px solid grey;
+            padding-bottom: 5px;
+            display: flex;
+        }
+
+        #logo {
+            width: 100px;
+            height: 43px;
+            margin-left: 30px;
+            margin-top: 7px;
+        }
+
+        #inputdiv {
+            /* border: 1px solid red; */
+            width: 45%;
+            height: 38px;
+            margin-left: 18%;
+            margin-top: 12px;
+            display: flex;
+        }
+
+        #search {
+            width: 90%;
+            height: 34px;
+            background-color: hsla(0, 0%, 7%);
+            border: 1px solid hsl(0, 0%, 18.82%);
+            outline: none;
+            color: #fff;
+            padding-left: 10px;
+            font-size: 17px;
+        }
+
+        #search:hover {
+            border: 1px solid #3ea6ff;
+        }
+
+        #search::placeholder {
+            font-size: 17px;
+            font-weight: 500;
+            padding-left: 2px;
+
+        }
+
+        #srch_btn {
+            width: 10%;
+            background-color: hsla(0, 0%, 100%, 0.08);
+        }
+
+        #srch_btn>img {
+            margin-left: 18px;
+            margin-top: 6px;
+            width: 29px;
+            height: 25px;
+
+            /* border:1px solid red; */
+        }
+
+        #thumbwrap {
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        #popular_thumbwrap {
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        #pop_title,
+        #title_div {
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            line-height: 1.3rem;
+            overflow: hidden;
+        }
+
+        #pop_chan_title,
+        #chan_title {
+            color: #cacaca;
+            font-size: 0.8rem;
+            line-height: 1.5rem;
+            font-weight: 400;
+
+        }
+
+        #pop_detaildiv,
+        #detaildiv {
+            /* border:1px solid red; */
+            max-width: 94%;
+            height: 80px;
+            margin-bottom: 25px;
+
+        }
+
+        #wrapper {
+            width: 98%;
+            display: grid;
+            grid-template-columns: repeat(4, auto);
+            grid-gap: 17px;
+            justify-content: space-around;
+            margin-top: 3%;
+            margin-left: 15px;
+        }
+
+        #videowrap {
+            display: none;
+            width: 50%;
+            height: 400px;
+            border: 1px solid #cacaca;
+            margin: auto;
+            margin-top: 30px;
+        }
+
+        iframe {
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="nav">
+        <img src="images/logo.png" id="logo" onclick="returnHome()">
+        <div id="inputdiv">
+            <input type="text" id="search" placeholder="Search">
+            <div id="srch_btn" onclick="displayData()">
+                <img src="images/search.png" alt="">
+            </div>
+        </div>
+    </div>
+
+    <div id="wrapper"></div>
+    <div id="videowrap"></div>
+</body>
+
+</html>
+<script>
+
+    let body = document.querySelector("body")
+    let wrapper = document.getElementById("wrapper")
+    let videowrap = document.getElementById("videowrap")
+
+    const KEY_1 = "AIzaSyCSIR4WEMugO3KfX2IIOhXri0zVggwOaeU"
+    const KEY_2 = "AIzaSyDs2fpRYAfzwhPM7GSJ1n9VQcuNiMo3LhU"
+
+    searchData = async () => {
+        const input = document.getElementById("search").value
+        const URL_1 = `https://youtube.googleapis.com/youtube/v3/search?q=${input}&key=${KEY_1}&type=video&maxResults=20&part=snippet`
+        let res = await fetch(URL_1);
+        let serdata = await res.json();
+        return (serdata.items);
+    }
+
+
+    displayData = async () => {
+        videowrap.innerHTML = "";
+        videowrap.style.display = "none"
+        wrapper.innerHTML = "";
+        let Udata = await searchData();
+        console.log(Udata)
+        Udata.forEach(({ id: { videoId }, snippet: { thumbnails: { medium: { url } }, channelTitle, title } }) => {
+            let thumbnail = document.createElement("img")
+            thumbnail.setAttribute("src", url)
+            let thumbwrap = document.createElement("div");
+            thumbwrap.setAttribute("id", "thumbwrap")
+            let title_div = document.createElement("div")
+            title_div.setAttribute("id", "title_div")
+            title_div.textContent = title;
+            chan_title = document.createElement("div")
+            chan_title.setAttribute("id", "chan_title")
+            chan_title.textContent = channelTitle;
+
+            let detaildiv = document.createElement("div")
+            detaildiv.setAttribute("id", "detaildiv")
+
+            thumbwrap.addEventListener("click", function () {
+                playVideo(videoId)
+            })
+            // wrapper.style.gridTemplateColumns="repeat(1, auto)";
+            detaildiv.append(title_div, chan_title)
+            thumbwrap.append(thumbnail, detaildiv)
+            wrapper.append(thumbwrap)
+            body.append(wrapper, videowrap)
+        })
+    }
+
+    function playVideo(videoId) {
+        console.log(videoId)
+        wrapper.innerHTML = "";
+        videowrap.innerHTML = "";
+        videowrap.style.display = "block";
+        let iframe = document.createElement("iframe")
+        iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`
+        iframe.width = 683;
+        iframe.height = 400;
+        iframe.allow = "autoplay";
+        iframe.setAttribute("allowfullscreen", true)
+        videowrap.append(iframe)
+    }
+
+
+    async function popularMovies() {
+        const URL_2 = `https://youtube.googleapis.com/youtube/v3/search?key=${KEY_1}&type=video&maxResults=20&part=snippet&order=relevance`;
+
+        let popdata = await fetch(URL_2)
+        let homedata = await popdata.json()
+        return homedata.items;
+    }
+    popularData();
+    async function popularData() {
+        videowrap.innerHTML = "";
+        videowrap.style.display = "none"
+        let popmov = await popularMovies();
+        console.log(popmov)
+        popmov.map(({ id: { videoId }, snippet: { thumbnails: { medium: { url } }, channelTitle, title } }) => {
+
+            let popular_thumb = document.createElement("img")
+            popular_thumb.setAttribute("src", url)
+            let popular_thumbwrap = document.createElement("div");
+            popular_thumbwrap.setAttribute("id", "popular_thumbwrap")
+            let pop_title = document.createElement("div")
+            pop_title.setAttribute("id", "pop_title")
+            pop_title.textContent = title;
+            pop_chan_title = document.createElement("div")
+            pop_chan_title.setAttribute("id", "pop_chan_title")
+            pop_chan_title.textContent = channelTitle;
+
+            let pop_detaildiv = document.createElement("div")
+            pop_detaildiv.setAttribute("id", "pop_detaildiv")
+
+            popular_thumbwrap.addEventListener("click", () => {
+                playVideo(videoId)
+            })
+            pop_detaildiv.append(pop_title, pop_chan_title)
+            popular_thumbwrap.append(popular_thumb, pop_detaildiv)
+            wrapper.append(popular_thumbwrap)
+        })
+    }
+
+    function returnHome() {
+        wrapper.innerHTML = "";
+        popularData();
+    }
+</script>

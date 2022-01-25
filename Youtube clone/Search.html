@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YoutubeSearch</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: rgb(24, 24, 24);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        #nav {
+            height: 56px;
+            border-bottom: 1px solid grey;
+            padding-bottom: 5px;
+            display: flex;
+        }
+
+        #logo {
+            width: 100px;
+            height: 43px;
+            margin-left: 30px;
+            margin-top: 7px;
+        }
+
+        #inputdiv {
+            width: 45%;
+            height: 38px;
+            margin-left: 18%;
+            margin-top: 12px;
+            display: flex;
+        }
+
+        #search {
+            width: 90%;
+            height: 34px;
+            background-color: hsla(0, 0%, 7%);
+            border: 1px solid hsl(0, 0%, 18.82%);
+            outline: none;
+            color: #fff;
+            padding-left: 10px;
+            font-size: 17px;
+        }
+
+        #search:hover {
+            border: 1px solid #3ea6ff;
+        }
+
+        #search::placeholder {
+            font-size: 17px;
+            font-weight: 500;
+            padding-left: 2px;
+        }
+
+        #srch_btn {
+            width: 10%;
+            background-color: hsla(0, 0%, 100%, 0.08);
+        }
+
+        #srch_btn>img {
+            margin-left: 18px;
+            margin-top: 6px;
+            width: 29px;
+            height: 25px;
+        }
+
+        #title_div {
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            line-height: 1.3rem;
+            overflow: hidden;
+        }
+
+        #chan_title {
+            color: #cacaca;
+            font-size: 0.8rem;
+            line-height: 1.5rem;
+            font-weight: 400;
+        }
+
+        #detaildiv {
+            max-width: 94%;
+            height: 80px;
+            margin-bottom: 25px;
+        }
+
+        #wrapper {
+            width: 98%;
+            display: grid;
+            grid-template-columns: repeat(4, auto);
+            grid-gap: 17px;
+            justify-content: space-around;
+            margin-top: 3%;
+            margin-left: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="nav">
+        <img src="images/logo.png" id="logo" onclick="returnHome()">
+        <div id="inputdiv">
+            <input type="text" id="search" placeholder="Search">
+            <div id="srch_btn" onclick="searchVideo()">
+                <img src="images/search.png" alt="">
+            </div>
+        </div>
+    </div>
+
+    <div id="wrapper"></div>
+</body>
+
+</html>
+<script>
+    let body = document.querySelector("body")
+    let wrapper = document.getElementById("wrapper")
+
+    const KEY_1 = "AIzaSyCSIR4WEMugO3KfX2IIOhXri0zVggwOaeU"
+    const KEY_2 = "AIzaSyC9fUewe4q1EBXheyPhs6AGI-dk4z-MHV4"
+
+    searchVideo = () => {
+        let input = document.getElementById("search").value
+        localStorage.setItem("input_val", JSON.stringify(input))
+        window.location.href = "Search.html"
+    }
+
+    
+
+   searchData=async ()=>{
+        const input = JSON.parse(localStorage.getItem("input_val"));
+        const URL_1 = `https://youtube.googleapis.com/youtube/v3/search?q=${input}&key=${KEY_2}&type=video&maxResults=20&part=snippet`
+
+        let res = await fetch(URL_1);
+        let serdata = await res.json();
+        return (serdata.items);
+    }
+
+    displayData=async ()=>{
+        wrapper.innerHTML = "";
+        let Sdata = await searchData();
+        Sdata.forEach(({ id: { videoId }, snippet, snippet: { thumbnails: { medium: { url } }, channelTitle, title } }) => {
+            let thumbnail = document.createElement("img")
+            thumbnail.setAttribute("src", url)
+            let title_div = document.createElement("div")
+            title_div.setAttribute("id", "title_div")
+            title_div.textContent = title;
+            chan_title = document.createElement("div")
+            chan_title.setAttribute("id", "chan_title")
+            chan_title.textContent = channelTitle;
+            let detaildiv = document.createElement("div")
+            detaildiv.setAttribute("id", "detaildiv")
+
+            let thumbwrap = document.createElement("div");
+            thumbwrap.setAttribute("id", "thumbwrap")
+
+            let video_data = {
+                snippet,
+                videoId
+            }
+
+            thumbwrap.onclick = () => {
+                videoWatch(video_data)
+            }
+            // wrapper.style.gridTemplateColumns="repeat(1, auto)";
+            detaildiv.append(title_div, chan_title)
+            thumbwrap.append(thumbnail, detaildiv)
+            wrapper.append(thumbwrap)
+        })
+    }
+
+    displayData();
+
+    videoWatch = (video_data) => {
+        window.location.href = "watch.html";
+        localStorage.setItem("videodata", JSON.stringify(video_data))
+    }
+
+    function returnHome() {
+        window.location.href = "Home.html"
+    }
+
+
+</script>
